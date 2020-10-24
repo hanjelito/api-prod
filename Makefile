@@ -32,3 +32,6 @@ build: ## Rebuilds all the containers
 
 ssh: ## ssh's into the container
 	U_ID=${UID} docker exec -it --user ${UID} ${ECCOM} bash
+
+##docker-compose run --rm php74-service php bin/console doctrine:database:create
+##docker exec -it mysql8-container bash
