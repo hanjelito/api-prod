@@ -1,4 +1,4 @@
-App\Entity\Product:
+App\Form\Model\ProductDto:
   properties:
     name:
       - NotBlank: ~

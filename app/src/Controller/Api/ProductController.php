@@ -3,8 +3,10 @@
 namespace App\Controller\Api;
 
 use App\Entity\Product;
+use App\Form\Model\ProductDto;
 use App\Form\Type\ProductFormType;
 use App\Repository\ProductRepository;
+use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -29,16 +31,22 @@ class ProductController extends AbstractFOSRestController
      * @Rest\View(serializerGroups={"book"}, serializerEnableMaxDepthChecks=true)
      * @param EntityManagerInterface $em
      * @param Request $request
+     * @param FileUploader $fileUploader
      * @return Product|FormInterface
      */
     public function postAction(
         EntityManagerInterface $em,
-        Request $request
+        Request $request,
+        FileUploader $fileUploader
     ) {
-        $product = new Product();
-        $form = $this->createForm(ProductFormType::class, $product);
+        $productDto = new ProductDto();
+        $form = $this->createForm(ProductFormType::class, $productDto);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $filename = $fileUploader->uploadBase64file($productDto->base64Image);
+            $product = new Product();
+            $product->setName($productDto->name);
+            $product->setImage($filename);
             $em->persist($product);
             $em->flush();
             return $product;
