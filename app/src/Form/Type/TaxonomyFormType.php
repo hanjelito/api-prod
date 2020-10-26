@@ -15,7 +15,8 @@ class TaxonomyFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', TextType::class);
+            ->add('id',     TextType::class)
+            ->add('name',   TextType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)

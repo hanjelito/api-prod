@@ -6,3 +6,5 @@ App\Entity\Product:
       groups: ['book']
     image:
       groups: ['book']
+    taxonomies:
+      groups: ['book']

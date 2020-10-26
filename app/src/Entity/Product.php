@@ -22,7 +22,7 @@ class Product
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name;
+    public $name;
 
     /**
      * @ORM\Column(type="string", length=512, nullable=true)
