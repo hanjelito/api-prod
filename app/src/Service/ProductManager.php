@@ -22,6 +22,11 @@ class ProductManager
          return $this->productRepository->find($id);
      }
 
+     public function getRepository(): ProductRepository
+     {
+         return $this->productRepository;
+     }
+
      public function create(): Product
      {
          return new Product();

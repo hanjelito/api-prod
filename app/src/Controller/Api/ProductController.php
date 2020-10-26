@@ -2,8 +2,6 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Product;
-use App\Repository\ProductRepository;
 use App\Service\ProductFormProcessor;
 use App\Service\ProductManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -17,12 +15,11 @@ class ProductController extends AbstractFOSRestController
     /**
      * @Rest\Get(path="/products")
      * @Rest\View(serializerGroups={"book"}, serializerEnableMaxDepthChecks=true)
-     * @param ProductRepository $productRepository
-     * @return Product[]
      */
-    public function getAction(ProductRepository $productRepository)
-    {
-        return $productRepository->findAll();
+    public function getAction(
+        ProductManager $productManager
+    ){
+        return $productManager->getRepository()->findAll();
     }
 
     /**

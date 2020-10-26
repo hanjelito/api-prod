@@ -13,13 +13,18 @@ class TaxonomyManager
 
     public function __construct(EntityManagerInterface $em, TaxonomyRepository  $taxonomyRepository)
     {
-        $this->em                       = $em;
-        $this->taxonomyRepository       = $taxonomyRepository;
+        $this->em                   = $em;
+        $this->taxonomyRepository   = $taxonomyRepository;
     }
 
     public function find(int $id): ?Taxonomy
     {
         return $this->taxonomyRepository->find($id);
+    }
+
+    public function getRepository(): TaxonomyRepository
+    {
+        return $this->taxonomyRepository;
     }
 
     public function create(): Taxonomy
