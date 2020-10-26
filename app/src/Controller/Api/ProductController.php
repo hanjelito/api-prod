@@ -10,6 +10,7 @@ use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use http\Env\Response;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -32,7 +33,7 @@ class ProductController extends AbstractFOSRestController
      * @param EntityManagerInterface $em
      * @param Request $request
      * @param FileUploader $fileUploader
-     * @return Product|FormInterface
+     * @return Response
      */
     public function postAction(
         EntityManagerInterface $em,
@@ -43,10 +44,12 @@ class ProductController extends AbstractFOSRestController
         $form = $this->createForm(ProductFormType::class, $productDto);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $filename = $fileUploader->uploadBase64file($productDto->base64Image);
             $product = new Product();
             $product->setName($productDto->name);
-            $product->setImage($filename);
+            if($productDto->base64Image) {
+                $filename = $fileUploader->uploadBase64file($productDto->base64Image);
+                $product->setImage($filename);
+            }
             $em->persist($product);
             $em->flush();
             return $product;
