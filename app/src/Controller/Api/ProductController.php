@@ -3,18 +3,12 @@
 namespace App\Controller\Api;
 
 use App\Entity\Product;
-use App\Entity\Taxonomy;
-use App\Form\Model\ProductDto;
-use App\Form\Model\TaxonomyDto;
-use App\Form\Type\ProductFormType;
 use App\Repository\ProductRepository;
-use App\Repository\TaxonomyRepository;
-use App\Service\FileUploader;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\ProductFormProcessor;
+use App\Service\ProductManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use FOS\RestBundle\View\View;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -36,28 +30,16 @@ class ProductController extends AbstractFOSRestController
      * @Rest\View(serializerGroups={"book"}, serializerEnableMaxDepthChecks=true)
      */
     public function postAction(
-        EntityManagerInterface $em,
-        Request $request,
-        FileUploader $fileUploader
+        ProductManager          $productManager,
+        ProductFormProcessor    $productFormProcessor,
+        Request                 $request
     ) {
-        $productDto = new ProductDto();
-        $form = $this->createForm(ProductFormType::class, $productDto);
-        $form->handleRequest($request);
-        if (!$form->isSubmitted()){
-            return new Response('', Response::HTTP_BAD_REQUEST);
-        }
-        if ($form->isValid()) {
-            $product = new Product();
-            $product->setName($productDto->name);
-            if($productDto->base64Image) {
-                $filename = $fileUploader->uploadBase64file($productDto->base64Image);
-                $product->setImage($filename);
-            }
-            $em->persist($product);
-            $em->flush();
-            return $product;
-        }
-        return $form;
+        $product = $productManager->create();
+        [$product, $error] = ($productFormProcessor)($product, $request);
+        $statusCode = $product ? Response::HTTP_CREATED : Response::HTTP_BAD_REQUEST;
+        $data       = $product ?? $error;
+        return View::create($data, $statusCode);
+
     }
 
     /**
@@ -67,61 +49,36 @@ class ProductController extends AbstractFOSRestController
 
     public function editAction(
         int $id,
-        EntityManagerInterface $em,
-        ProductRepository $productRepository,
-        TaxonomyRepository $taxonomyRepository,
-        Request $request,
-        FileUploader $fileUploader
+        ProductFormProcessor    $productFormProcessor,
+        ProductManager          $productManager,
+        Request                 $request
     ){
-        $product = $productRepository->find($id);
+        $product = $productManager->find($id);
         if(!$product) {
-            throw $this->createAccessDeniedException('Product not found');
+            return View::create('Product not found', Response::HTTP_BAD_REQUEST);
         }
-        $productDto = ProductDto::createFromProduct($product);
+        [$product, $error] = ($productFormProcessor)($product, $request);
 
-        $originalTaxonomies = new ArrayCollection();
-        foreach ($product->getTaxonomies() as $taxonomy) {
-            $taxonomyDto = TaxonomyDto::createFromTaxonomy($taxonomy);
-            $productDto->taxonomies[] = $taxonomyDto;
-            $originalTaxonomies->add($taxonomyDto);
-        }
+        $statusCode = $product ? Response::HTTP_CREATED : Response::HTTP_BAD_REQUEST;
+        $data       = $product ?? $error;
+        return View::create($data, $statusCode);
 
-        $form = $this->createForm(ProductFormType::class, $productDto);
-        $form->handleRequest($request);
-        if (!$form->isSubmitted()) {
-            return new Response('', Response::HTTP_BAD_REQUEST);
-        }
-        if($form->isValid()) {
-            // Remove Taxonomy
-            foreach ($originalTaxonomies as $originalTaxonomyDto) {
-                if (!in_array($originalTaxonomyDto, $productDto->taxonomies)) {
-                    $taxonomy = $taxonomyRepository->find($originalTaxonomyDto->id);
-                    $product->removeTaxonomy($taxonomy);
-                }
-            }
+    }
 
-            //add Taxonomy
-            foreach ($productDto->taxonomies as $newTaxonomyDto) {
-                if (!$originalTaxonomies->contains($newTaxonomyDto)) {
-                    $taxonomy = $taxonomyRepository->find($newTaxonomyDto->id ?? 0);
-                    if(!$taxonomy) {
-                        $taxonomy = new Taxonomy();
-                        $taxonomy->setName($newTaxonomyDto->name);
-                        $em->persist($taxonomy);
-                    }
-                    $product->addTaxonomy($taxonomy);
-                }
-            }
-            $product->setName($product->name);
-            if ($productDto->base64Image) {
-                $filename = $fileUploader->uploadBase64File($productDto->base64Image);
-                $product->setImage($filename);
-            }
-            $em->persist($product);
-            $em->flush();
-            $em->refresh($product);
-            return $product;
+    /**
+     * @Rest\Delete(path="/products/{id}", requirements={"id"="\d+"})
+     * @Rest\View(serializerGroups={"book"}, serializerEnableMaxDepthChecks=true)
+     */
+
+    public function deleteAction(
+        int $id,
+        ProductManager          $productManager
+    ){
+        $product = $productManager->find($id);
+        if(!$product) {
+            return View::create('Product not found', Response::HTTP_BAD_REQUEST);
         }
-        return $form;
+        $productManager->delete($product);
+        return View::create(null, Response::HTTP_NO_CONTENT);
     }
 }

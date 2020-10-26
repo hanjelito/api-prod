@@ -12,7 +12,7 @@ class TaxonomyDto {
     public static function createFromTaxonomy(Taxonomy  $taxonomy): self
     {
         $dto        = new self();
-        $dto->id    =$taxonomy->getId();
+        $dto->id    = $taxonomy->getId();
         $dto->name  = $taxonomy->getName();
         return $dto;
     }
