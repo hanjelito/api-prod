@@ -17,10 +17,16 @@ class ProductController extends AbstractFOSRestController
      * @Rest\View(serializerGroups={"book"}, serializerEnableMaxDepthChecks=true)
      */
     public function getAction(
-        ProductManager $productManager
+        Request         $request,
+        ProductManager  $productManager
     ){
+        if ($request->get('search')) {
+            return $productManager->getRepository()->findWhere($request->get('search'));
+        }
         return $productManager->getRepository()->findAll();
+
     }
+
 
     /**
      * @Rest\Post(path="/products")

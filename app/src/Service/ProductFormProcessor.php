@@ -68,7 +68,9 @@ class ProductFormProcessor
                 }
             }
             $product->setName($productDto->name);
+            $product->setDescription($productDto->description);
             $product->setCost($productDto->cost);
+            $product->setCostFinal($productDto->cost + $productDto->cost * 0.21);
             if ($productDto->base64Image) {
                 $filename = $this->fileUploader->uploadBase64File($productDto->base64Image);
                 $product->setImage($filename);

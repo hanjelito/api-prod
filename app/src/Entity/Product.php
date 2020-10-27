@@ -39,6 +39,16 @@ class Product
      */
     public $cost;
 
+    /**
+     * @ORM\Column(type="string", length=500, nullable=true)
+     */
+    private $description;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $cost_final;
+
     public function __construct()
     {
         $this->taxonomies = new ArrayCollection();
@@ -57,6 +67,18 @@ class Product
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
 
         return $this;
     }
@@ -105,6 +127,20 @@ class Product
     public function removeTaxonomy(Taxonomy $taxonomy): self
     {
         $this->taxonomies->removeElement($taxonomy);
+
+        return $this;
+    }
+
+
+
+    public function getCostFinal(): ?float
+    {
+        return $this->cost_final;
+    }
+
+    public function setCostFinal(?float $cost_final): self
+    {
+        $this->cost_final = $cost_final;
 
         return $this;
     }

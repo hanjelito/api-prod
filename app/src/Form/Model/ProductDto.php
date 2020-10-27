@@ -6,9 +6,11 @@ use App\Entity\Product;
 
 class ProductDto {
     public $name;
-    public $cost;
+    public $description;
     public $base64Image;
     public $taxonomies;
+    public $cost;
+    public $costFinal;
 
     public function __Constructor()
     {
@@ -18,8 +20,9 @@ class ProductDto {
     public static function createFromProduct(Product $product): self
     {
         $dto = new self();
-        $dto->name = $product->getName();
-        $dto->cost = $product->getCost();
+        $dto->name          = $product->getName();
+        $dto->description   = $product->getDescription();
+        $dto->cost          = $product->getCost();
         return $dto;
     }
 }

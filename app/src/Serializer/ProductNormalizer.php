@@ -25,7 +25,6 @@ class ProductNormalizer implements ContextAwareNormalizerInterface
     public function normalize($product, $format = [], array $context = [])
     {
         $data = $this->normalizer->normalize($product, $format, $context);
-        $data['precio'] = $product->getCost()+ ($product->getCost() * 0.21);
         if(!empty($product->getImage())){
             $data['image'] = $this->urlHelper->getAbsoluteUrl('/storage/default/' . $product->getImage());
         }

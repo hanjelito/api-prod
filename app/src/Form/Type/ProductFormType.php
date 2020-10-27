@@ -17,7 +17,9 @@ class ProductFormType extends AbstractType
     {
         $builder
             ->add('name',           TextType::class)
+            ->add('description',    TextType::class)
             ->add('cost',           NumberType::class)
+            ->add('costFinal',      NumberType::class)
             ->add('base64Image',    TextType::class)
             ->add('taxonomies',     CollectionType::class, [
                 'allow_add'     => true,
