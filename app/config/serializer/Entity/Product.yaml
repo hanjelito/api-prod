@@ -4,6 +4,8 @@ App\Entity\Product:
       groups: ['book']
     name:
       groups: ['book']
+    cost:
+      groups: [ 'book' ]
     image:
       groups: ['book']
     taxonomies:

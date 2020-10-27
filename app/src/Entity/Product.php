@@ -37,7 +37,7 @@ class Product
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    private $cost;
+    public $cost;
 
     public function __construct()
     {
@@ -57,6 +57,18 @@ class Product
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getCost(): ?float
+    {
+        return $this->cost;
+    }
+
+    public function setCost(?float $cost): self
+    {
+        $this->cost = $cost;
 
         return $this;
     }
@@ -97,15 +109,4 @@ class Product
         return $this;
     }
 
-    public function getCost(): ?float
-    {
-        return $this->cost;
-    }
-
-    public function setCost(?float $cost): self
-    {
-        $this->cost = $cost;
-
-        return $this;
-    }
 }

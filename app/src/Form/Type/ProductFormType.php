@@ -5,6 +5,7 @@ namespace App\Form\Type;
 use App\Form\Model\ProductDto;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -16,6 +17,7 @@ class ProductFormType extends AbstractType
     {
         $builder
             ->add('name',           TextType::class)
+            ->add('cost',           NumberType::class)
             ->add('base64Image',    TextType::class)
             ->add('taxonomies',     CollectionType::class, [
                 'allow_add'     => true,
