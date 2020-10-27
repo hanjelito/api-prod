@@ -21,9 +21,18 @@ class ProductController extends AbstractFOSRestController
         ProductManager  $productManager
     ){
         if ($request->get('search')) {
-            return $productManager->getRepository()->findWhere($request->get('search'));
+            return $productManager->getRepository()->findWhere(
+                $request->get('search'),
+                $request->get('pag'),
+                2
+            );
+        } else {
+            return $productManager->getRepository()->findAllRaw(
+                $request->get('pag'),
+                2
+            );
         }
-        return $productManager->getRepository()->findAll();
+
 
     }
 

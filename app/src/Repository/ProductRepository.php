@@ -18,16 +18,36 @@ class ProductRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Product::class);
     }
-    public function findWhere($value)
+    public function findWhere(
+        $value,
+        $pag,
+        $limit
+    )
     {
         return $this->createQueryBuilder('p')
             ->andWhere('p.name LIKE :val')
             ->setParameter('val', '%'.$value.'%')
             ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
+            ->setFirstResult($pag * $limit)
+            ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
     }
+
+    public function findAllRaw(
+        $pag,
+        $limit
+    )
+    {
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.id', 'ASC')
+            ->setFirstResult($pag * $limit)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+
 
     // /**
     //  * @return Product[] Returns an array of Product objects
